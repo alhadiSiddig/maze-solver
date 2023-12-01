@@ -1,5 +1,6 @@
 #persistance/file_format.py
 
+import array
 import struct
 from dataclasses import dataclass
 from typing import BinaryIO
@@ -30,4 +31,13 @@ class FileHeader(frozen = True ):
         file.write(struct.pack("<2I" , self.width , self.height))
 
 
-    
+@dataclass
+class FileBody(frozen = True): 
+    square_values : array.array 
+
+    def read(cls, header: FileHeader , file : BinaryIO) -> "FileBody":
+        return cls(array.array('B' , file.read(header.width *header.height)))
+
+    def write(self, file : BinaryIO) -> None : 
+        file.write(self.square_values.tobytes())
+        
